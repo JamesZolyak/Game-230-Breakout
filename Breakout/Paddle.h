@@ -17,6 +17,7 @@ public:
 	Vector2f dimensions;
 	int speed;
 	bool launchedBall = false;
+	int lives;
 	Paddle(Vector2f dimensions);
 	void handlePlayerMovement(float deltaTime, int gameWidth);
 	void launchBall();

@@ -10,6 +10,7 @@
 #include "Brick.h"
 
 using namespace sf;
+using namespace std;
 
 class Ball
 {
@@ -22,11 +23,11 @@ public:
 	Ball(float f);
 
 	void handleBallMovement(float deltaTime);
-	bool handleEnemyScoreCollision();
-	bool handlePlayerScoreCollision(int gameWidth);
+	void resetBall(Paddle* player);
+	bool handlePlayerLife(Sound* s, int gameHeight, Paddle* player);
 	void handleWallCollision(Sound* s, int gameWidth, int gameHeight);
 	void handlePaddleCollision(Sound* s, Paddle player);
-	void handleBrickCollision(Sound* s, Brick* brick);
+	bool handleBrickCollision(Sound* s, vector<vector<Brick*>> rows);
 	~Ball();
 };
 

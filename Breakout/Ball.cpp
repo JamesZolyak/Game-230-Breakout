@@ -2,6 +2,7 @@
 
 using namespace sf;
 using namespace std;
+
 Ball::Ball(float f)
 {
 	radius = f;
@@ -18,23 +19,18 @@ void Ball::handleBallMovement(float deltaTime)
 	ball.move(cos(ballAngle) * factor, sin(ballAngle) * factor);
 }
 
-bool Ball::handleEnemyScoreCollision()
+void Ball::resetBall(Paddle* player)
 {
-	if (ball.getPosition().x - radius < 0.f)
-	{
-		ball.setPosition(400, 200);
-		speed = 200;
-		return true;
-	}
-	return false;
+	player->launchedBall = false;
+	player->lives--;
+	ball.setPosition(player->paddle.getPosition().x, player->paddle.getPosition().y - 30);
 }
 
-bool Ball::handlePlayerScoreCollision(int gameWidth)
+bool Ball::handlePlayerLife(Sound* s, int gameHeight, Paddle* player)
 {
-	if (ball.getPosition().x + radius > gameWidth)
+	if (ball.getPosition().y + radius > gameHeight)
 	{
-		ball.setPosition(400, 200);
-		speed = 200;
+		resetBall(player);
 		return true;
 	}
 	return false;
@@ -77,17 +73,25 @@ void Ball::handlePaddleCollision(Sound* s, Paddle player)
 	}
 }
 
-void Ball::handleBrickCollision(Sound* s, Brick* brick)
+bool Ball::handleBrickCollision(Sound* s, vector<vector<Brick*>> rows)
 {
-	if (ball.getGlobalBounds().intersects(brick->brick.getGlobalBounds()))
+	for (vector<Brick*> r : rows)
 	{
-		Vector2f temp = ball.getPosition() - brick->brick.getPosition();
-		float angle = atan2f(temp.y, temp.x);
-		ballAngle = angle;
-		ball.setPosition(ball.getPosition().x, brick->brick.getPosition().y + radius + 25);
+		for (Brick* brick : r)
+		{
+			if (ball.getGlobalBounds().intersects(brick->brick.getGlobalBounds()) && brick->health > 0)
+			{
+				Vector2f temp = ball.getPosition() - brick->brick.getPosition();
+				float angle = atan2f(temp.y, temp.x);
+				ballAngle = angle;
+				ball.setPosition(ball.getPosition().x, brick->brick.getPosition().y + radius + 25);
 
-		brick->onHit();
+				brick->onHit();
+				return true;
+			}
+		}
 	}
+	return false;
 }
 
 Ball::~Ball()

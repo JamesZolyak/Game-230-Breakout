@@ -9,8 +9,10 @@
 #include "Ball.h"
 #include "Brick.h"
 #include "BasicBrick.h"
+#include "DoubleHealthBrick.h"
 #include <string>
 #include <cmath>
+#include <vector>
 
 using namespace sf;
 using namespace std;
@@ -21,10 +23,39 @@ const int gameHeight = 600;
 
 Paddle* player = new Paddle(Vector2f(100, 25));
 Ball* ball = new Ball(10.0f);
-BasicBrick* b = new BasicBrick(Vector2f(100, 25));
+vector<Brick*> firstRow;
+vector<Brick*> secondRow;
+vector<vector<Brick*>> rows;
 bool isPlaying = false;
+const int startingLives = 3;
 int playerScore = 0;
-int playerLives = 0;
+const float startingX = 50;
+const float startingY = 12.5f;
+float initialX = 50;
+float initialY = 12.5f;
+
+void brickSetup()
+{
+	for (int i = 0; i < 8; ++i)
+	{
+		DoubleHealthBrick* temp = new DoubleHealthBrick(Vector2f(100, 25));
+		temp->brick.setPosition(initialX, initialY);
+		firstRow.push_back(temp);
+		initialX += 100;
+	}
+	initialY += 25;
+	initialX = startingX;
+
+	for (int i = 0; i < 8; ++i)
+	{
+		BasicBrick* temp = new BasicBrick(Vector2f(100, 25));
+		temp->brick.setPosition(initialX, initialY);
+		secondRow.push_back(temp);
+		initialX += 100;
+	}
+	rows.push_back(secondRow);
+	rows.push_back(firstRow);
+}
 
 int main()
 {
@@ -53,7 +84,14 @@ int main()
 	playerLivesText.setCharacterSize(40);
 	playerLivesText.setPosition(700.f, 80.f);
 	playerLivesText.setFillColor(Color::White);
-	playerLivesText.setString(to_string(playerLives));
+	playerLivesText.setString(to_string(player->lives));
+
+	Text lossText;
+	lossText.setFont(font);
+	lossText.setCharacterSize(40);
+	lossText.setPosition(gameWidth/2, gameHeight/2);
+	lossText.setFillColor(Color::White);
+	lossText.setString("You Lose!\nPress P to play again!");
 
 	SoundBuffer sb;
 	sb.loadFromFile("Bounce.wav");
@@ -62,12 +100,11 @@ int main()
 
 	player->paddle.setPosition(gameWidth / 2, gameHeight - 10);
 	ball->ball.setPosition(player->paddle.getPosition().x, player->paddle.getPosition().y - 25);
-	b->brick.setPosition(gameWidth / 2, gameHeight / 2 - 100);
+
+	brickSetup();
 	do
 	{
 		ball->ballAngle = (std::rand() % 360) * 2 * pi / 360;
-		playerScore = ball->ballAngle;
-		playerScoreText.setString(to_string(playerScore));
 	} while (std::abs(std::cos(ball->ballAngle)) > 0.5f);
 
 	while (window.isOpen())
@@ -92,19 +129,43 @@ int main()
 			ball->handleBallMovement(deltaTime);
 		else
 			ball->ball.setPosition(player->paddle.getPosition().x, player->paddle.getPosition().y - 30);
-
+		
 		ball->handleWallCollision(&s, gameWidth, gameHeight);
 		ball->handlePaddleCollision(&s, *player);
-		ball->handleBrickCollision(&s, b);
+		if (ball->handleBrickCollision(&s, rows))
+		{
+			playerScore += 100;
+			playerScoreText.setString(to_string(playerScore));
+		}			
+
+		if (ball->handlePlayerLife(&s, gameHeight, player))
+			playerLivesText.setString(to_string(player->lives));
 
 		window.clear();
 		window.draw(playerScoreText);
 		window.draw(playerLivesText);
-		window.draw(player->paddle);
-		window.draw(ball->ball);
-		if (b->health > 0)
+		if (player->lives > 0)
 		{
-			window.draw(b->brick);
+			window.draw(player->paddle);
+			window.draw(ball->ball);
+
+			for (int j = 0; j < rows.size(); ++j)
+			{
+				for (int k = 0; k < rows[j].size(); ++k)
+				{
+					if (rows[j][k]->health > 0)
+						window.draw(rows[j][k]->brick);
+					else
+					{
+						rows[j][k] = nullptr;
+						rows[j].erase(rows[j].begin() + k);
+					}
+				}
+			}
+		}
+		else
+		{
+			window.draw(lossText);
 		}
 		
 		window.display();
