@@ -33,7 +33,9 @@ const float startingX = 50;
 const float startingY = 12.5f;
 float initialX = 50;
 float initialY = 12.5f;
-
+Text playerScoreText;
+Text playerLivesText;
+Text lossText;
 void brickSetup()
 {
 	for (int i = 0; i < 8; ++i)
@@ -57,6 +59,27 @@ void brickSetup()
 	rows.push_back(firstRow);
 }
 
+void resetCheck()
+{
+	if (Keyboard::isKeyPressed(Keyboard::Space))
+	{
+		for (int i = 0; i < rows.size(); ++i)
+		{
+			rows[i].clear();
+		}
+		rows.clear();
+		initialX = startingX;
+		initialY = startingY;
+		player->lives = startingLives;
+		playerScore = 0;
+		playerLivesText.setString(to_string(player->lives));
+		playerScoreText.setString(to_string(playerScore));
+		player->paddle.setPosition(gameWidth / 2, gameHeight - 10);
+		ball->ball.setPosition(player->paddle.getPosition().x, player->paddle.getPosition().y - 25);
+		brickSetup();
+	}
+}
+
 int main()
 {
 	std::srand(static_cast<unsigned int>(std::time(NULL)));
@@ -72,31 +95,48 @@ int main()
 	if (!font.loadFromFile("calibri.ttf"))
 		return EXIT_FAILURE;
 
-	Text playerScoreText;
 	playerScoreText.setFont(font);
 	playerScoreText.setCharacterSize(40);
 	playerScoreText.setPosition(80.f, 80.f);
 	playerScoreText.setFillColor(Color::White);
 	playerScoreText.setString(to_string(playerScore));
 
-	Text playerLivesText;
 	playerLivesText.setFont(font);
 	playerLivesText.setCharacterSize(40);
 	playerLivesText.setPosition(700.f, 80.f);
 	playerLivesText.setFillColor(Color::White);
 	playerLivesText.setString(to_string(player->lives));
 
-	Text lossText;
 	lossText.setFont(font);
 	lossText.setCharacterSize(40);
 	lossText.setPosition(gameWidth/2, gameHeight/2);
 	lossText.setFillColor(Color::White);
 	lossText.setString("You Lose!\nPress P to play again!");
 
-	SoundBuffer sb;
-	sb.loadFromFile("Bounce.wav");
-	Sound s;
-	s.setBuffer(sb);
+	Sound paddleBounceSound;
+	SoundBuffer paddleBounceBuffer;
+	paddleBounceBuffer.loadFromFile("Bounce.wav");
+	paddleBounceSound.setBuffer(paddleBounceBuffer);
+
+	Sound wallBounceSound;
+	SoundBuffer wallBounceBuffer;
+	wallBounceBuffer.loadFromFile("WallBounce.wav");
+	wallBounceSound.setBuffer(wallBounceBuffer);
+
+	Sound ballLossSound;
+	SoundBuffer ballLossBuffer;
+	ballLossBuffer.loadFromFile("BallLoss.wav");
+	ballLossSound.setBuffer(ballLossBuffer);
+
+	Sound brickDamageSound;
+	SoundBuffer brickDamageBuffer;
+	brickDamageBuffer.loadFromFile("BrickDamage.wav");
+	brickDamageSound.setBuffer(brickDamageBuffer);
+
+	Sound brickDestroySound;
+	SoundBuffer brickDestroyBuffer;
+	brickDestroyBuffer.loadFromFile("BrickDestroy.wav");
+	brickDestroySound.setBuffer(brickDestroyBuffer);
 
 	player->paddle.setPosition(gameWidth / 2, gameHeight - 10);
 	ball->ball.setPosition(player->paddle.getPosition().x, player->paddle.getPosition().y - 25);
@@ -121,25 +161,27 @@ int main()
 				window.close();
 		}
 
-		
-		float deltaTime = clock.restart().asSeconds();
-		player->handlePlayerMovement(deltaTime, gameWidth);
-		player->launchBall();
-		if (player->launchedBall)
-			ball->handleBallMovement(deltaTime);
-		else
-			ball->ball.setPosition(player->paddle.getPosition().x, player->paddle.getPosition().y - 30);
-		
-		ball->handleWallCollision(&s, gameWidth, gameHeight);
-		ball->handlePaddleCollision(&s, *player);
-		if (ball->handleBrickCollision(&s, rows))
+		if (player->lives > 0)
 		{
-			playerScore += 100;
-			playerScoreText.setString(to_string(playerScore));
-		}			
+			float deltaTime = clock.restart().asSeconds();
+			player->handlePlayerMovement(deltaTime, gameWidth);
+			player->launchBall();
+			if (player->launchedBall)
+				ball->handleBallMovement(deltaTime);
+			else
+				ball->ball.setPosition(player->paddle.getPosition().x, player->paddle.getPosition().y - 30);
 
-		if (ball->handlePlayerLife(&s, gameHeight, player))
-			playerLivesText.setString(to_string(player->lives));
+			ball->handleWallCollision(&wallBounceSound, gameWidth, gameHeight);
+			ball->handlePaddleCollision(&paddleBounceSound, *player);
+			if (ball->handleBrickCollision(&brickDestroySound, rows))
+			{
+				playerScore += 100;
+				playerScoreText.setString(to_string(playerScore));
+			}
+
+			if (ball->handlePlayerLife(&ballLossSound, gameHeight, player))
+				playerLivesText.setString(to_string(player->lives));
+		}
 
 		window.clear();
 		window.draw(playerScoreText);
@@ -166,6 +208,7 @@ int main()
 		else
 		{
 			window.draw(lossText);
+			resetCheck();
 		}
 		
 		window.display();
