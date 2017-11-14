@@ -27,7 +27,7 @@ public:
 	bool handlePlayerLife(Sound* s, int gameHeight, Paddle* player);
 	void handleWallCollision(Sound* s, int gameWidth, int gameHeight);
 	void handlePaddleCollision(Sound* s, Paddle player);
-	bool handleBrickCollision(Sound* s, vector<vector<Brick*>> rows);
+	bool handleBrickCollision(Sound* s, vector<vector<Brick*>> rows, Paddle* player);
 	~Ball();
 };
 

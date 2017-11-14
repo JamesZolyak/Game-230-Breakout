@@ -18,6 +18,7 @@ public:
 	int speed;
 	bool launchedBall = false;
 	int lives;
+	int bricksHit;
 	Paddle(Vector2f dimensions);
 	void handlePlayerMovement(float deltaTime, int gameWidth);
 	void launchBall();

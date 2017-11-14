@@ -36,6 +36,7 @@ float initialY = 12.5f;
 Text playerScoreText;
 Text playerLivesText;
 Text lossText;
+
 void brickSetup()
 {
 	for (int i = 0; i < 8; ++i)
@@ -59,24 +60,50 @@ void brickSetup()
 	rows.push_back(firstRow);
 }
 
+void resetBoard()
+{
+	for (int i = 0; i < rows.size(); ++i)
+	{
+		rows[i].clear();
+	}
+	rows.clear();
+	initialX = startingX;
+	initialY = startingY;
+	player->lives = startingLives;
+	playerScore = 0;
+	player->bricksHit = 0;
+	playerLivesText.setString(to_string(player->lives));
+	playerScoreText.setString(to_string(playerScore));
+	player->paddle.setPosition(gameWidth / 2, gameHeight - 10);
+	ball->ball.setPosition(player->paddle.getPosition().x, player->paddle.getPosition().y - 25);
+	player->launchedBall = false;
+	brickSetup();
+}
+
+void nextLevel()
+{
+	for (int i = 0; i < rows.size(); ++i)
+	{
+		rows[i].clear();
+	}
+	rows.clear();
+	initialX = startingX;
+	initialY = startingY;
+	player->bricksHit = 0;
+	ball->speed += 50;
+	playerLivesText.setString(to_string(player->lives));
+	playerScoreText.setString(to_string(playerScore));
+	player->paddle.setPosition(gameWidth / 2, gameHeight - 10);
+	ball->ball.setPosition(player->paddle.getPosition().x, player->paddle.getPosition().y - 25);
+	player->launchedBall = false;
+	brickSetup();
+}
+
 void resetCheck()
 {
 	if (Keyboard::isKeyPressed(Keyboard::Space))
 	{
-		for (int i = 0; i < rows.size(); ++i)
-		{
-			rows[i].clear();
-		}
-		rows.clear();
-		initialX = startingX;
-		initialY = startingY;
-		player->lives = startingLives;
-		playerScore = 0;
-		playerLivesText.setString(to_string(player->lives));
-		playerScoreText.setString(to_string(playerScore));
-		player->paddle.setPosition(gameWidth / 2, gameHeight - 10);
-		ball->ball.setPosition(player->paddle.getPosition().x, player->paddle.getPosition().y - 25);
-		brickSetup();
+		resetBoard();
 	}
 }
 
@@ -173,7 +200,7 @@ int main()
 
 			ball->handleWallCollision(&wallBounceSound, gameWidth, gameHeight);
 			ball->handlePaddleCollision(&paddleBounceSound, *player);
-			if (ball->handleBrickCollision(&brickDestroySound, rows))
+			if (ball->handleBrickCollision(&brickDestroySound, rows, player))
 			{
 				playerScore += 100;
 				playerScoreText.setString(to_string(playerScore));
@@ -182,6 +209,12 @@ int main()
 			if (ball->handlePlayerLife(&ballLossSound, gameHeight, player))
 				playerLivesText.setString(to_string(player->lives));
 		}
+
+		if (0 == (rows[0].size() + rows[1].size()))
+		{
+			nextLevel();
+		}
+
 
 		window.clear();
 		window.draw(playerScoreText);
@@ -208,6 +241,7 @@ int main()
 		else
 		{
 			window.draw(lossText);
+			ball->speed = 200;
 			resetCheck();
 		}
 		

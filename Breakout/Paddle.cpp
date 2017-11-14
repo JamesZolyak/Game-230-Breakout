@@ -10,6 +10,7 @@ Paddle::Paddle(Vector2f dimensions)
 	paddle.setFillColor(sf::Color(100, 100, 200));
 	paddle.setOrigin(dimensions / 2.f);
 	lives = 3;
+	bricksHit = 0;
 }
 
 void Paddle::handlePlayerMovement(float deltaTime, int gameWidth)

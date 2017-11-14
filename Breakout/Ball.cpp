@@ -41,14 +41,27 @@ void Ball::handleWallCollision(Sound* s, int gameWidth, int gameHeight)
 	if (ball.getPosition().x - radius < 0.f)
 	{
 		//s->play();
-		ballAngle = -ballAngle * 90;
+
+		Vector2f c;
+		c.x = cosf(ballAngle);
+		c.y = sinf(ballAngle);
+
+		ballAngle = atan2f(c.y, -c.x);
 		ball.setPosition(radius + 10.1f, ball.getPosition().y);
 		
 	}
 	if (ball.getPosition().x + radius > gameWidth)
 	{
 		//s->play();
-		ballAngle = -ballAngle * 90;
+		float angleHigh = 1.5f * 3.14159265358f;
+		float angleLow = 0.5f * 3.14159265358f;
+		Vector2f c;
+		c.x = cosf(ballAngle); 
+		c.y = sinf(ballAngle); 
+
+		ballAngle = atan2f(c.y, -c.x);
+
+		//ballAngle = -ballAngle * (0.5f * 3.1415926f);
 		ball.setPosition(gameWidth - radius - 10.1f, ball.getPosition().y);
 	}
 	if (ball.getPosition().y - radius < 0.f)
@@ -73,7 +86,7 @@ void Ball::handlePaddleCollision(Sound* s, Paddle player)
 	}
 }
 
-bool Ball::handleBrickCollision(Sound* s, vector<vector<Brick*>> rows)
+bool Ball::handleBrickCollision(Sound* s, vector<vector<Brick*>> rows, Paddle* player)
 {
 	for (vector<Brick*> r : rows)
 	{
@@ -87,6 +100,10 @@ bool Ball::handleBrickCollision(Sound* s, vector<vector<Brick*>> rows)
 				ball.setPosition(ball.getPosition().x, brick->brick.getPosition().y + radius + 25);
 
 				brick->onHit();
+				if (brick->health <= 0)
+				{
+					player->bricksHit++;
+				}
 				return true;
 			}
 		}
