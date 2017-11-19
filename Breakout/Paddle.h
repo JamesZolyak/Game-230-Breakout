@@ -14,7 +14,7 @@ class Paddle
 public:
 	RectangleShape paddle;
 	Vector2f position;
-	Vector2f dimensions;
+	Vector2f paddleDimensions;
 	int speed;
 	bool launchedBall = false;
 	int lives;

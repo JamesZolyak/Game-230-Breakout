@@ -6,6 +6,7 @@
 #include <SFML/System.hpp>
 #include <SFML/OpenGL.hpp>
 #include <SFML/Main.hpp>
+#include "Paddle.h"
 
 using namespace sf;
 
@@ -17,10 +18,11 @@ public:
 	Vector2f dimensions;
 	int health;
 	Color color;
+	Sprite sprite;
 
-	void onHit();
 	Brick();
-	Brick(Vector2f dimensions);
+	Brick(Vector2f dimensions, Texture* texture);
+	virtual void onHit(Paddle* player);
 	~Brick();
 };
 

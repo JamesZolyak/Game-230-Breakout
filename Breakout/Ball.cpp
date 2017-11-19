@@ -30,6 +30,7 @@ bool Ball::handlePlayerLife(Sound* s, int gameHeight, Paddle* player)
 {
 	if (ball.getPosition().y + radius > gameHeight)
 	{
+		s->play();
 		resetBall(player);
 		return true;
 	}
@@ -40,7 +41,7 @@ void Ball::handleWallCollision(Sound* s, int gameWidth, int gameHeight)
 {
 	if (ball.getPosition().x - radius < 0.f)
 	{
-		//s->play();
+		s->play();
 
 		Vector2f c;
 		c.x = cosf(ballAngle);
@@ -52,7 +53,7 @@ void Ball::handleWallCollision(Sound* s, int gameWidth, int gameHeight)
 	}
 	if (ball.getPosition().x + radius > gameWidth)
 	{
-		//s->play();
+		s->play();
 		float angleHigh = 1.5f * 3.14159265358f;
 		float angleLow = 0.5f * 3.14159265358f;
 		Vector2f c;
@@ -66,7 +67,7 @@ void Ball::handleWallCollision(Sound* s, int gameWidth, int gameHeight)
 	}
 	if (ball.getPosition().y - radius < 0.f)
 	{
-		//s->play();
+		s->play();
 		ballAngle = -ballAngle;
 		ball.setPosition(ball.getPosition().x, radius + 0.1f);
 	}
@@ -80,7 +81,7 @@ void Ball::handlePaddleCollision(Sound* s, Paddle player)
 		float angle = atan2f(temp.y, temp.x);
 		ballAngle = angle;
 
-		//s->play();
+		s->play();
 		//ball.setPosition(player.paddle.getPosition().x + radius + player.dimensions.x / 2 + 20.0f, ball.getPosition().y);
 		ball.setPosition(ball.getPosition().x, player.paddle.getPosition().y - radius - 25);
 	}
@@ -97,9 +98,22 @@ bool Ball::handleBrickCollision(Sound* s, vector<vector<Brick*>> rows, Paddle* p
 				Vector2f temp = ball.getPosition() - brick->brick.getPosition();
 				float angle = atan2f(temp.y, temp.x);
 				ballAngle = angle;
-				ball.setPosition(ball.getPosition().x, brick->brick.getPosition().y + radius + 25);
-
-				brick->onHit();
+				if (ball.getPosition().y > brick->brick.getPosition().y)
+				{
+					ball.setPosition(ball.getPosition().x, brick->brick.getPosition().y + radius + 20);
+				}
+				else if (ball.getPosition().y < brick->brick.getPosition().y)
+				{
+					ball.setPosition(ball.getPosition().x, brick->brick.getPosition().y - radius - 20);
+				}
+				
+				
+				s->play();
+				brick->onHit(player);
+				if (brick->color == Color::Green)
+				{
+					speed += 30;
+				}
 				if (brick->health <= 0)
 				{
 					player->bricksHit++;

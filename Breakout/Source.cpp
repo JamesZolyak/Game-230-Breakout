@@ -10,6 +10,8 @@
 #include "Brick.h"
 #include "BasicBrick.h"
 #include "DoubleHealthBrick.h"
+#include "BallSpeedBrick.h"
+#include "PaddleIncreaseBrick.h"
 #include <string>
 #include <cmath>
 #include <vector>
@@ -25,37 +27,111 @@ Paddle* player = new Paddle(Vector2f(100, 25));
 Ball* ball = new Ball(10.0f);
 vector<Brick*> firstRow;
 vector<Brick*> secondRow;
+vector<Brick*> thirdRow;
+vector<Brick*> fourthRow;
 vector<vector<Brick*>> rows;
 bool isPlaying = false;
 const int startingLives = 3;
+const int startingSpeed = 300;
 int playerScore = 0;
-const float startingX = 50;
-const float startingY = 12.5f;
-float initialX = 50;
-float initialY = 12.5f;
+const float startingX = 80;
+const float startingY = 60;
+float initialX = 80;
+float initialY = 60;
 Text playerScoreText;
 Text playerLivesText;
 Text lossText;
+Texture texture;
+Texture image;
+Sprite background;
+const int brickWidth = 75;
+const int brickHeight = 25;
+
 
 void brickSetup()
 {
+	std::srand(static_cast<unsigned int>(std::time(NULL)));
 	for (int i = 0; i < 8; ++i)
 	{
-		DoubleHealthBrick* temp = new DoubleHealthBrick(Vector2f(100, 25));
+		Brick* temp;
+		int tempNum = rand() % 100;
+		if (tempNum >= 0 && tempNum <= 50)
+			temp = new BasicBrick(Vector2f(brickWidth, brickHeight), &texture);
+		else if (tempNum >= 51 && tempNum <= 72)
+			temp = new DoubleHealthBrick(Vector2f(brickWidth, brickHeight), &texture);
+		else if (tempNum >= 73 && tempNum <= 91)
+			temp = new PaddleIncreaseBrick(Vector2f(brickWidth, brickHeight), &texture);
+		else if (tempNum >= 92 && tempNum <= 99)
+			temp = new BallSpeedBrick(Vector2f(brickWidth, brickHeight), &texture);
+
 		temp->brick.setPosition(initialX, initialY);
 		firstRow.push_back(temp);
-		initialX += 100;
+		initialX += 90;
 	}
-	initialY += 25;
+	initialY += 35;
 	initialX = startingX;
 
 	for (int i = 0; i < 8; ++i)
 	{
-		BasicBrick* temp = new BasicBrick(Vector2f(100, 25));
+		Brick* temp;
+		int tempNum = rand() % 100;
+		if (tempNum >= 0 && tempNum <= 50)
+			temp = new BasicBrick(Vector2f(brickWidth, brickHeight), &texture);
+		else if (tempNum >= 51 && tempNum <= 72)
+			temp = new DoubleHealthBrick(Vector2f(brickWidth, brickHeight), &texture);
+		else if (tempNum >= 73 && tempNum <= 91)
+			temp = new PaddleIncreaseBrick(Vector2f(brickWidth, brickHeight), &texture);
+		else if (tempNum >= 92 && tempNum <= 99)
+			temp = new BallSpeedBrick(Vector2f(brickWidth, brickHeight), &texture);
+
 		temp->brick.setPosition(initialX, initialY);
 		secondRow.push_back(temp);
-		initialX += 100;
+		initialX += 90;
 	}
+
+	initialY += 35;
+	initialX = startingX;
+
+	for (int i = 0; i < 8; ++i)
+	{
+		Brick* temp;
+		int tempNum = rand() % 100;
+		if (tempNum >= 0 && tempNum <= 50)
+			temp = new BasicBrick(Vector2f(brickWidth, brickHeight), &texture);
+		else if (tempNum >= 51 && tempNum <= 72)
+			temp = new DoubleHealthBrick(Vector2f(brickWidth, brickHeight), &texture);
+		else if (tempNum >= 73 && tempNum <= 91)
+			temp = new PaddleIncreaseBrick(Vector2f(brickWidth, brickHeight), &texture);
+		else if (tempNum >= 92 && tempNum <= 99)
+			temp = new BallSpeedBrick(Vector2f(brickWidth, brickHeight), &texture);
+
+		temp->brick.setPosition(initialX, initialY);
+		thirdRow.push_back(temp);
+		initialX += 90;
+	}
+
+	initialY += 35;
+	initialX = startingX;
+
+	for (int i = 0; i < 8; ++i)
+	{
+		Brick* temp;
+		int tempNum = rand() % 100;
+		if (tempNum >= 0 && tempNum <= 50)
+			temp = new BasicBrick(Vector2f(brickWidth, brickHeight), &texture);
+		else if (tempNum >= 51 && tempNum <= 72)
+			temp = new DoubleHealthBrick(Vector2f(brickWidth, brickHeight), &texture);
+		else if (tempNum >= 73 && tempNum <= 91)
+			temp = new PaddleIncreaseBrick(Vector2f(brickWidth, brickHeight), &texture);
+		else if (tempNum >= 92 && tempNum <= 99)
+			temp = new BallSpeedBrick(Vector2f(brickWidth, brickHeight), &texture);
+
+		temp->brick.setPosition(initialX, initialY);
+		fourthRow.push_back(temp);
+		initialX += 90;
+	}
+	rows.push_back(fourthRow);
+	rows.push_back(thirdRow);
 	rows.push_back(secondRow);
 	rows.push_back(firstRow);
 }
@@ -90,7 +166,7 @@ void nextLevel()
 	initialX = startingX;
 	initialY = startingY;
 	player->bricksHit = 0;
-	ball->speed += 50;
+	ball->speed += 100;
 	playerLivesText.setString(to_string(player->lives));
 	playerScoreText.setString(to_string(playerScore));
 	player->paddle.setPosition(gameWidth / 2, gameHeight - 10);
@@ -116,21 +192,29 @@ int main()
 	Clock AITimer;
 	const Time AITime = seconds(0.1f);
 	player->speed = 250;
-	ball->speed = 200;
+	ball->speed = startingSpeed;
 
 	Font font;
 	if (!font.loadFromFile("calibri.ttf"))
 		return EXIT_FAILURE;
 
+	if (!texture.loadFromFile("2-brick-texture-free.jpg"))
+		return EXIT_FAILURE;
+
+	if (!image.loadFromFile("230-BreakoutBackground.png"))
+		return EXIT_FAILURE;
+
+	background.setTexture(image);
+
 	playerScoreText.setFont(font);
 	playerScoreText.setCharacterSize(40);
-	playerScoreText.setPosition(80.f, 80.f);
+	playerScoreText.setPosition(80.f, 520.f);
 	playerScoreText.setFillColor(Color::White);
 	playerScoreText.setString(to_string(playerScore));
 
 	playerLivesText.setFont(font);
 	playerLivesText.setCharacterSize(40);
-	playerLivesText.setPosition(700.f, 80.f);
+	playerLivesText.setPosition(700.f, 520.f);
 	playerLivesText.setFillColor(Color::White);
 	playerLivesText.setString(to_string(player->lives));
 
@@ -210,13 +294,14 @@ int main()
 				playerLivesText.setString(to_string(player->lives));
 		}
 
-		if (0 == (rows[0].size() + rows[1].size()))
+		if (0 == (rows[0].size() + rows[1].size() + rows[2].size() + rows[3].size()))
 		{
 			nextLevel();
 		}
 
 
 		window.clear();
+		window.draw(background);
 		window.draw(playerScoreText);
 		window.draw(playerLivesText);
 		if (player->lives > 0)
@@ -241,7 +326,7 @@ int main()
 		else
 		{
 			window.draw(lossText);
-			ball->speed = 200;
+			ball->speed = startingSpeed;
 			resetCheck();
 		}
 		

@@ -15,7 +15,7 @@ class BasicBrick :
 {
 public:
 	BasicBrick();
-	BasicBrick(Vector2f dimensions);
+	BasicBrick(Vector2f dimensions, Texture* texture);
 	~BasicBrick();
 };
 

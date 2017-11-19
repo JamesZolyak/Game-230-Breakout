@@ -12,7 +12,7 @@ class DoubleHealthBrick :
 {
 public:
 	DoubleHealthBrick();
-	DoubleHealthBrick(Vector2f dimensions);
+	DoubleHealthBrick(Vector2f dimensions, Texture* texture);
 	~DoubleHealthBrick();
 };
 

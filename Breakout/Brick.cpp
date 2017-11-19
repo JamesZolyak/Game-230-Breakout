@@ -5,14 +5,16 @@ Brick::Brick()
 
 }
 
-Brick::Brick(Vector2f dimensions)
+Brick::Brick(Vector2f dimensions, Texture* texture)
 {
 	brick.setSize(dimensions - sf::Vector2f(3, 3));
-	brick.setFillColor(color);
+	
 	brick.setOrigin(dimensions / 2.f);
+	brick.setTexture(texture);
+	brick.setFillColor(color);
 }
 
-void Brick::onHit()
+void Brick::onHit(Paddle* player)
 {
 	health--;
 }
