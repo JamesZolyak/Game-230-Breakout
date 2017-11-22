@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/Audio.hpp>
@@ -7,23 +8,20 @@
 #include <SFML/OpenGL.hpp>
 #include <SFML/Main.hpp>
 #include "Paddle.h"
-#include "PowerUp.h"
 using namespace sf;
 
-class Brick
+class PowerUp
 {
 public:
-	RectangleShape brick;
+	CircleShape powerUp;
 	Vector2f position;
-	Vector2f dimensions;
-	int health;
+	float radius;
+	int speed;
 	Color color;
-	Sprite sprite;
-	bool containsPowerUp;
-	PowerUp* powerUp;
-	Brick();
-	Brick(Vector2f dimensions, Texture* texture);
-	virtual void onHit(Paddle* player);
-	~Brick();
+	PowerUp();
+	PowerUp(float f, Color color);
+	void HandleMovement(float deltaTime);
+	virtual void Activate(Paddle* player);
+	~PowerUp();
 };
 

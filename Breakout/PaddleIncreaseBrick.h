@@ -1,5 +1,6 @@
 #pragma once
 #include "Brick.h"
+#include "PaddleIncreasePowerUp.h"
 class PaddleIncreaseBrick :
 	public Brick
 {

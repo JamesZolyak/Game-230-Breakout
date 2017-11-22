@@ -8,6 +8,10 @@
 #include <SFML/Main.hpp>
 #include "Paddle.h"
 #include "Brick.h"
+#include "PowerUp.h"
+#include <string>
+#include <cmath>
+#include <vector>
 
 using namespace sf;
 using namespace std;
@@ -20,6 +24,7 @@ public:
 	float radius;
 	float ballAngle;
 	int speed;
+	vector<PowerUp*> powerUps;
 	Ball(float f);
 
 	void handleBallMovement(float deltaTime);
@@ -28,6 +33,7 @@ public:
 	void handleWallCollision(Sound* s, int gameWidth, int gameHeight);
 	void handlePaddleCollision(Sound* s, Paddle player);
 	bool handleBrickCollision(Sound* s, vector<vector<Brick*>> rows, Paddle* player);
+	void handlePowerUpCollision(Sound* s, Paddle* player);
 	~Ball();
 };
 

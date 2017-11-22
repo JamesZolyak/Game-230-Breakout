@@ -110,9 +110,15 @@ bool Ball::handleBrickCollision(Sound* s, vector<vector<Brick*>> rows, Paddle* p
 				
 				s->play();
 				brick->onHit(player);
+				if (brick->containsPowerUp)
+				{
+					powerUps.push_back(brick->powerUp);
+					brick->powerUp->powerUp.setPosition(brick->brick.getPosition());
+				}
+					
 				if (brick->color == Color::Green)
 				{
-					speed += 30;
+					speed += 20;
 				}
 				if (brick->health <= 0)
 				{
@@ -123,6 +129,21 @@ bool Ball::handleBrickCollision(Sound* s, vector<vector<Brick*>> rows, Paddle* p
 		}
 	}
 	return false;
+}
+
+void Ball::handlePowerUpCollision(Sound* s, Paddle* player)
+{
+	if (powerUps.size() > 0)
+	{
+		for (PowerUp* powerUp : powerUps)
+		{
+			if (powerUp->powerUp.getGlobalBounds().intersects(player->paddle.getGlobalBounds()))
+			{
+				powerUp->Activate(player);
+				powerUps.pop_back();
+			}
+		}
+	}
 }
 
 Ball::~Ball()

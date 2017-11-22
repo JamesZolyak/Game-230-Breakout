@@ -8,6 +8,7 @@
 #include <SFML/Main.hpp>
 
 using namespace sf;
+using namespace std;
 
 class Paddle
 {

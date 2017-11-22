@@ -154,6 +154,8 @@
     <ClCompile Include="DoubleHealthBrick.cpp" />
     <ClCompile Include="Paddle.cpp" />
     <ClCompile Include="PaddleIncreaseBrick.cpp" />
+    <ClCompile Include="PaddleIncreasePowerUp.cpp" />
+    <ClCompile Include="PowerUp.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -164,6 +166,8 @@
     <ClInclude Include="DoubleHealthBrick.h" />
     <ClInclude Include="Paddle.h" />
     <ClInclude Include="PaddleIncreaseBrick.h" />
+    <ClInclude Include="PaddleIncreasePowerUp.h" />
+    <ClInclude Include="PowerUp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

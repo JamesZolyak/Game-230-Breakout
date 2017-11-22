@@ -4,6 +4,7 @@
 
 PaddleIncreaseBrick::PaddleIncreaseBrick()
 {
+	
 }
 
 PaddleIncreaseBrick::PaddleIncreaseBrick(Vector2f dimensions, Texture* texture)
@@ -14,13 +15,19 @@ PaddleIncreaseBrick::PaddleIncreaseBrick(Vector2f dimensions, Texture* texture)
 	brick.setTexture(texture);
 	brick.setFillColor(color);
 	brick.setOrigin(dimensions / 2.f);
+	containsPowerUp = true;
+	powerUp = new PaddleIncreasePowerUp(10.f, Color::Red);
+	powerUp->speed = 200;
+	powerUp->powerUp.setRadius(10 - 3);
+	powerUp->powerUp.setOutlineThickness(3);
+	powerUp->powerUp.setOutlineColor(color);
+	powerUp->powerUp.setFillColor(color);
+	powerUp->powerUp.setOrigin(10 / 2, 10 / 2);
+	powerUp->powerUp.setPosition(brick.getPosition());
 }
 
 void PaddleIncreaseBrick::onHit(Paddle* player)
 {
-	player->paddleDimensions.x += 20;
-	player->paddle.setSize(player->paddleDimensions - sf::Vector2f(3, 3));
-	player->paddle.setOrigin(player->paddleDimensions / 2.f);
 	health--;
 }
 

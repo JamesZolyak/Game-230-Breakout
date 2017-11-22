@@ -210,19 +210,19 @@ int main()
 	playerScoreText.setCharacterSize(40);
 	playerScoreText.setPosition(80.f, 520.f);
 	playerScoreText.setFillColor(Color::White);
-	playerScoreText.setString(to_string(playerScore));
+	playerScoreText.setString("Score: " + to_string(playerScore));
 
 	playerLivesText.setFont(font);
 	playerLivesText.setCharacterSize(40);
 	playerLivesText.setPosition(700.f, 520.f);
 	playerLivesText.setFillColor(Color::White);
-	playerLivesText.setString(to_string(player->lives));
+	playerLivesText.setString("Lives: " + to_string(player->lives));
 
 	lossText.setFont(font);
 	lossText.setCharacterSize(40);
 	lossText.setPosition(gameWidth/2, gameHeight/2);
 	lossText.setFillColor(Color::White);
-	lossText.setString("You Lose!\nPress P to play again!");
+	lossText.setString("You Lose!\nPress Space to play again!");
 
 	Sound paddleBounceSound;
 	SoundBuffer paddleBounceBuffer;
@@ -282,16 +282,27 @@ int main()
 			else
 				ball->ball.setPosition(player->paddle.getPosition().x, player->paddle.getPosition().y - 30);
 
+			if (ball->powerUps.size() > 0)
+			{
+				for (PowerUp* powerUp : ball->powerUps)
+				{
+					powerUp->HandleMovement(deltaTime);
+				}
+			}
+
 			ball->handleWallCollision(&wallBounceSound, gameWidth, gameHeight);
 			ball->handlePaddleCollision(&paddleBounceSound, *player);
+			
+			ball->handlePowerUpCollision(&paddleBounceSound, player);
+
 			if (ball->handleBrickCollision(&brickDestroySound, rows, player))
 			{
 				playerScore += 100;
-				playerScoreText.setString(to_string(playerScore));
+				playerScoreText.setString("Score: " + to_string(playerScore));
 			}
 
 			if (ball->handlePlayerLife(&ballLossSound, gameHeight, player))
-				playerLivesText.setString(to_string(player->lives));
+				playerLivesText.setString("Lives: " + to_string(player->lives));
 		}
 
 		if (0 == (rows[0].size() + rows[1].size() + rows[2].size() + rows[3].size()))
@@ -308,6 +319,13 @@ int main()
 		{
 			window.draw(player->paddle);
 			window.draw(ball->ball);
+			if (ball->powerUps.size() > 0)
+			{
+				for (PowerUp* powerUp : ball->powerUps)
+				{
+					window.draw(powerUp->powerUp);
+				}
+			}
 
 			for (int j = 0; j < rows.size(); ++j)
 			{

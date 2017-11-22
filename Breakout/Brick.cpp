@@ -2,7 +2,6 @@
 
 Brick::Brick()
 {
-
 }
 
 Brick::Brick(Vector2f dimensions, Texture* texture)
@@ -12,6 +11,7 @@ Brick::Brick(Vector2f dimensions, Texture* texture)
 	brick.setOrigin(dimensions / 2.f);
 	brick.setTexture(texture);
 	brick.setFillColor(color);
+	containsPowerUp = false;
 }
 
 void Brick::onHit(Paddle* player)

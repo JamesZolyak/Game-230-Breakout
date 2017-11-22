@@ -13,6 +13,7 @@ BasicBrick::BasicBrick(Vector2f dimensions, Texture* texture)
 	brick.setTexture(texture);
 	brick.setFillColor(color);
 	brick.setOrigin(dimensions / 2.f);
+	containsPowerUp = false;
 }
 
 
