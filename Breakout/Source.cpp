@@ -278,6 +278,11 @@ int main()
 	brickDestroyBuffer.loadFromFile("BrickDestroy.wav");
 	brickDestroySound.setBuffer(brickDestroyBuffer);
 
+	Sound newLevelSound;
+	SoundBuffer newLevelBuffer;
+	newLevelBuffer.loadFromFile("NewLevel.wav");
+	newLevelSound.setBuffer(newLevelBuffer);
+
 	player->paddle.setPosition(gameWidth / 2, gameHeight - 10);
 	ball->ball.setPosition(player->paddle.getPosition().x, player->paddle.getPosition().y - 25);
 
@@ -336,6 +341,7 @@ int main()
 
 		if (0 == (rows[0].size() + rows[1].size() + rows[2].size() + rows[3].size()))
 		{
+			newLevelSound.play();
 			nextLevel();
 		}
 
