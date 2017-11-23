@@ -140,6 +140,7 @@ void Ball::handlePowerUpCollision(Sound* s, Paddle* player)
 			if (powerUp->powerUp.getGlobalBounds().intersects(player->paddle.getGlobalBounds()))
 			{
 				powerUp->Activate(player);
+				s->play();
 				powerUps.pop_back();
 			}
 		}

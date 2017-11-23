@@ -12,6 +12,7 @@
 #include "DoubleHealthBrick.h"
 #include "BallSpeedBrick.h"
 #include "PaddleIncreaseBrick.h"
+#include "PaddleIncreaseSpeedBrick.h"
 #include <string>
 #include <cmath>
 #include <vector>
@@ -50,18 +51,24 @@ const int brickHeight = 25;
 
 void brickSetup()
 {
+	firstRow.clear();
+	secondRow.clear();
+	thirdRow.clear();
+	fourthRow.clear();
 	std::srand(static_cast<unsigned int>(std::time(NULL)));
 	for (int i = 0; i < 8; ++i)
 	{
 		Brick* temp;
 		int tempNum = rand() % 100;
-		if (tempNum >= 0 && tempNum <= 50)
+		if (tempNum >= 0 && tempNum <= 54)
 			temp = new BasicBrick(Vector2f(brickWidth, brickHeight), &texture);
-		else if (tempNum >= 51 && tempNum <= 72)
+		else if (tempNum >= 55 && tempNum <= 76)
 			temp = new DoubleHealthBrick(Vector2f(brickWidth, brickHeight), &texture);
-		else if (tempNum >= 73 && tempNum <= 91)
+		else if (tempNum >= 77 && tempNum <= 87)
 			temp = new PaddleIncreaseBrick(Vector2f(brickWidth, brickHeight), &texture);
-		else if (tempNum >= 92 && tempNum <= 99)
+		else if (tempNum >= 88 && tempNum <= 93)
+			temp = new PaddleIncreaseSpeedBrick(Vector2f(brickWidth, brickHeight), &texture);
+		else if (tempNum >= 94 && tempNum <= 99)
 			temp = new BallSpeedBrick(Vector2f(brickWidth, brickHeight), &texture);
 
 		temp->brick.setPosition(initialX, initialY);
@@ -75,13 +82,15 @@ void brickSetup()
 	{
 		Brick* temp;
 		int tempNum = rand() % 100;
-		if (tempNum >= 0 && tempNum <= 50)
+		if (tempNum >= 0 && tempNum <= 54)
 			temp = new BasicBrick(Vector2f(brickWidth, brickHeight), &texture);
-		else if (tempNum >= 51 && tempNum <= 72)
+		else if (tempNum >= 55 && tempNum <= 76)
 			temp = new DoubleHealthBrick(Vector2f(brickWidth, brickHeight), &texture);
-		else if (tempNum >= 73 && tempNum <= 91)
+		else if (tempNum >= 77 && tempNum <= 87)
 			temp = new PaddleIncreaseBrick(Vector2f(brickWidth, brickHeight), &texture);
-		else if (tempNum >= 92 && tempNum <= 99)
+		else if (tempNum >= 88 && tempNum <= 93)
+			temp = new PaddleIncreaseSpeedBrick(Vector2f(brickWidth, brickHeight), &texture);
+		else if (tempNum >= 94 && tempNum <= 99)
 			temp = new BallSpeedBrick(Vector2f(brickWidth, brickHeight), &texture);
 
 		temp->brick.setPosition(initialX, initialY);
@@ -96,13 +105,15 @@ void brickSetup()
 	{
 		Brick* temp;
 		int tempNum = rand() % 100;
-		if (tempNum >= 0 && tempNum <= 50)
+		if (tempNum >= 0 && tempNum <= 54)
 			temp = new BasicBrick(Vector2f(brickWidth, brickHeight), &texture);
-		else if (tempNum >= 51 && tempNum <= 72)
+		else if (tempNum >= 55 && tempNum <= 76)
 			temp = new DoubleHealthBrick(Vector2f(brickWidth, brickHeight), &texture);
-		else if (tempNum >= 73 && tempNum <= 91)
+		else if (tempNum >= 77 && tempNum <= 87)
 			temp = new PaddleIncreaseBrick(Vector2f(brickWidth, brickHeight), &texture);
-		else if (tempNum >= 92 && tempNum <= 99)
+		else if (tempNum >= 88 && tempNum <= 93)
+			temp = new PaddleIncreaseSpeedBrick(Vector2f(brickWidth, brickHeight), &texture);
+		else if (tempNum >= 94 && tempNum <= 99)
 			temp = new BallSpeedBrick(Vector2f(brickWidth, brickHeight), &texture);
 
 		temp->brick.setPosition(initialX, initialY);
@@ -117,13 +128,15 @@ void brickSetup()
 	{
 		Brick* temp;
 		int tempNum = rand() % 100;
-		if (tempNum >= 0 && tempNum <= 50)
+		if (tempNum >= 0 && tempNum <= 54)
 			temp = new BasicBrick(Vector2f(brickWidth, brickHeight), &texture);
-		else if (tempNum >= 51 && tempNum <= 72)
+		else if (tempNum >= 55 && tempNum <= 76)
 			temp = new DoubleHealthBrick(Vector2f(brickWidth, brickHeight), &texture);
-		else if (tempNum >= 73 && tempNum <= 91)
+		else if (tempNum >= 77 && tempNum <= 87)
 			temp = new PaddleIncreaseBrick(Vector2f(brickWidth, brickHeight), &texture);
-		else if (tempNum >= 92 && tempNum <= 99)
+		else if (tempNum >= 88 && tempNum <= 93)
+			temp = new PaddleIncreaseSpeedBrick(Vector2f(brickWidth, brickHeight), &texture);
+		else if (tempNum >= 94 && tempNum <= 99)
 			temp = new BallSpeedBrick(Vector2f(brickWidth, brickHeight), &texture);
 
 		temp->brick.setPosition(initialX, initialY);
@@ -140,9 +153,15 @@ void resetBoard()
 {
 	for (int i = 0; i < rows.size(); ++i)
 	{
+		for (int j = 0; j < rows[i].size(); ++j)
+		{
+			delete rows[i][j];
+			rows[i][j] = nullptr;
+		}
 		rows[i].clear();
 	}
 	rows.clear();
+	//rows.swap(vector<vector<Brick*>>());
 	initialX = startingX;
 	initialY = startingY;
 	player->lives = startingLives;
@@ -151,6 +170,8 @@ void resetBoard()
 	playerLivesText.setString(to_string(player->lives));
 	playerScoreText.setString(to_string(playerScore));
 	player->paddle.setPosition(gameWidth / 2, gameHeight - 10);
+	player->paddle.setSize(Vector2f(100, 25) - sf::Vector2f(3, 3));
+	player->speed = 250;
 	ball->ball.setPosition(player->paddle.getPosition().x, player->paddle.getPosition().y - 25);
 	player->launchedBall = false;
 	brickSetup();
@@ -160,6 +181,11 @@ void nextLevel()
 {
 	for (int i = 0; i < rows.size(); ++i)
 	{
+		for (int j = 0; j < rows[i].size(); ++j)
+		{
+			delete rows[i][j];
+			rows[i][j] = nullptr;
+		}
 		rows[i].clear();
 	}
 	rows.clear();
@@ -177,7 +203,10 @@ void nextLevel()
 
 void resetCheck()
 {
-	if (Keyboard::isKeyPressed(Keyboard::Space))
+	player->paddle.setPosition(gameWidth / 2, gameHeight - 10);
+	ball->ball.setPosition(player->paddle.getPosition().x, player->paddle.getPosition().y - 25);
+	player->launchedBall = false;
+	if (Keyboard::isKeyPressed(Keyboard::R))
 	{
 		resetBoard();
 	}
@@ -208,21 +237,21 @@ int main()
 
 	playerScoreText.setFont(font);
 	playerScoreText.setCharacterSize(40);
-	playerScoreText.setPosition(80.f, 520.f);
+	playerScoreText.setPosition(60.f, 520.f);
 	playerScoreText.setFillColor(Color::White);
 	playerScoreText.setString("Score: " + to_string(playerScore));
 
 	playerLivesText.setFont(font);
 	playerLivesText.setCharacterSize(40);
-	playerLivesText.setPosition(700.f, 520.f);
+	playerLivesText.setPosition(660.f, 520.f);
 	playerLivesText.setFillColor(Color::White);
 	playerLivesText.setString("Lives: " + to_string(player->lives));
 
 	lossText.setFont(font);
 	lossText.setCharacterSize(40);
-	lossText.setPosition(gameWidth/2, gameHeight/2);
+	lossText.setPosition(gameWidth/2 - 100, gameHeight/2 - 100);
 	lossText.setFillColor(Color::White);
-	lossText.setString("You Lose!\nPress Space to play again!");
+	lossText.setString("You Lose!\nPress R to play again!");
 
 	Sound paddleBounceSound;
 	SoundBuffer paddleBounceBuffer;
